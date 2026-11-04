@@ -6,7 +6,7 @@
 /* ───────────── 디자인 토큰 ─────────────
    색은 CSS 변수로 정의하고 다크모드에서 값만 바꿉니다.
    → 컴포넌트에서는 bg-paper, text-ink 처럼 쓰면 라이트/다크가 자동 전환됩니다.
-   포인트 컬러는 남색(accent) 하나, 나머지는 중립색입니다. */
+   포인트 컬러는 파란색(accent) 하나, 나머지는 중립색입니다. */
 :root {
   --paper: #f8f6f1;      /* 바탕 (따뜻한 종이색) */
   --surface: #ffffff;    /* 카드·패널 */
@@ -14,10 +14,10 @@
   --ink-2: #45423c;      /* 본문 글자 */
   --ink-3: #6f6a62;      /* 보조 글자 (대비 4.5:1 이상) */
   --line: #e3ded3;       /* 구분선 */
-  --accent: #1f3a5f;     /* 포인트 (버튼 배경 등) */
+  --accent: #2563eb;     /* 포인트: 파란색 (버튼 배경 등) */
   --accent-ink: #ffffff; /* 포인트 위 글자 */
-  --accent-text: #24477a;/* 링크 등 포인트 글자 */
-  --accent-soft: #e8eef6;/* 연한 포인트 배경 */
+  --accent-text: #1d4ed8;/* 링크 등 포인트 글자 */
+  --accent-soft: #e7eefd;/* 연한 포인트 배경 */
 }
 .dark {
   --paper: #121316;
@@ -26,10 +26,10 @@
   --ink-2: #c9c4ba;
   --ink-3: #959086;
   --line: #2d3036;
-  --accent: #9dbde3;
-  --accent-ink: #0f1726;
-  --accent-text: #a9c5e6;
-  --accent-soft: #1c2533;
+  --accent: #60a5fa;
+  --accent-ink: #0b1220;
+  --accent-text: #93c5fd;
+  --accent-soft: #172240;
 }
 
 @theme inline {
