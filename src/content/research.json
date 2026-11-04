@@ -1,0 +1,36 @@
+[
+  {
+    "id": "character-education-framework",
+    "title": "대학 교양교육에서의 인성교육 프레임워크 설계",
+    "summary": "대학 교양 과정에 적용 가능한 인성교육 프레임워크를 제안하고, 한 학기 시범 운영 결과를 분석했습니다.",
+    "year": 2025,
+    "tags": ["인성교육", "교양교육", "교육과정"],
+    "links": [
+      { "label": "논문 PDF (Google Drive)", "url": "https://drive.google.com/" },
+      { "label": "발표 슬라이드", "url": "https://docs.google.com/presentation/" }
+    ],
+    "body": "research/character-education-framework.md"
+  },
+  {
+    "id": "moral-dilemma-discussion",
+    "title": "도덕적 딜레마 토론 수업이 공감 능력에 미치는 영향",
+    "summary": "도덕적 딜레마 토론을 8주간 진행한 집단과 통제 집단의 공감 척도 변화를 비교했습니다.",
+    "year": 2024,
+    "tags": ["도덕 발달", "토론 수업", "공감"],
+    "links": [
+      { "label": "학회 발표 영상 (YouTube)", "url": "https://www.youtube.com/" }
+    ],
+    "body": "research/moral-dilemma-discussion.md"
+  },
+  {
+    "id": "tabula-rasa-reflection",
+    "title": "'빈 서판'에서 다시 읽는 교육: 성찰 일지 연구",
+    "summary": "학생 성찰 일지를 질적으로 분석해, 자기 이해가 깊어지는 계기를 유형화했습니다.",
+    "year": 2023,
+    "tags": ["교육철학", "성찰", "질적 연구"],
+    "links": [
+      { "label": "연구 요약 PDF", "url": "/files/README.txt" }
+    ],
+    "body": "이 연구는 한 학기 동안 수집한 학생 성찰 일지 120편을 분석했습니다.\n\n## 주요 발견\n\n- 타인의 관점을 **직접 인용**할 때 성찰의 깊이가 커졌습니다.\n- 실패 경험을 기록한 일지에서 자기 이해 표현이 가장 많았습니다.\n\n> 짧은 본문은 이처럼 JSON 안에 마크다운으로 직접 적을 수도 있습니다."
+  }
+]

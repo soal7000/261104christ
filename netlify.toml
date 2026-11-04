@@ -1,0 +1,20 @@
+# Netlify 배포 설정
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Node 버전 고정 (.nvmrc 와 동일하게 유지)
+  NODE_VERSION = "22"
+
+# SPA 라우팅: 어떤 주소로 접속해도 index.html 을 돌려주고 React Router 가 처리합니다.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# 빌드된 정적 파일(해시 포함)은 오래 캐시
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -1,0 +1,33 @@
+[
+  {
+    "id": "character-education-intro",
+    "title": "인성교육의 이해",
+    "semester": "2026-2학기",
+    "description": "인성교육의 개념, 역사, 주요 이론을 살펴보고 학교 현장의 사례를 함께 분석합니다.",
+    "materials": [
+      { "label": "강의계획서 (PDF)", "url": "https://drive.google.com/" },
+      { "label": "1주차 슬라이드", "url": "https://docs.google.com/presentation/" },
+      { "label": "참고 영상: 인성교육이란?", "url": "https://www.youtube.com/" }
+    ]
+  },
+  {
+    "id": "moral-philosophy-seminar",
+    "title": "도덕철학 세미나",
+    "semester": "2026-2학기",
+    "description": "아리스토텔레스, 칸트, 밀의 원전을 읽고 매주 쟁점을 정해 토론합니다.",
+    "materials": [
+      { "label": "읽기 자료 목록", "url": "https://drive.google.com/" },
+      { "label": "토론 진행 가이드", "url": "https://docs.google.com/document/" }
+    ]
+  },
+  {
+    "id": "teacher-ethics",
+    "title": "교사 윤리와 성찰적 실천",
+    "semester": "2026-1학기",
+    "description": "예비 교사로서 마주할 윤리적 상황을 사례 중심으로 다루고 성찰 일지를 작성합니다.",
+    "materials": [
+      { "label": "사례집 (Google Drive)", "url": "https://drive.google.com/" },
+      { "label": "성찰 일지 양식", "url": "https://docs.google.com/document/" }
+    ]
+  }
+]

@@ -1,0 +1,9 @@
+node_modules
+dist
+*.local
+.DS_Store
+# 실제 Firebase 설정값은 커밋하지 않습니다
+.env
+.env.*
+!.env.example
+*.tsbuildinfo

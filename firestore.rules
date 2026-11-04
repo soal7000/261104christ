@@ -1,0 +1,76 @@
+rules_version = '2';
+
+// ─────────────────────────────────────────────────────────────
+// Tabula Rasa Lab – Firestore 보안 규칙
+// 사용법: Firebase 콘솔 → Firestore Database → 규칙(Rules) 탭에
+//         이 파일 내용을 전부 붙여넣고 [게시]를 누르세요.
+// ※ 아래 isAdmin() 의 이메일을 교수님 구글 이메일로 꼭 바꾸세요.
+//   (src/content/site.ts 의 adminEmails 와 같게 맞춥니다)
+// ─────────────────────────────────────────────────────────────
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 관리자(교수) 여부: 구글 로그인 이메일로 판단
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'professor@example.com'   // ← 교수님 구글 이메일로 변경 (여러 명이면 쉼표로 추가)
+        ];
+    }
+
+    // (선택) 학교 계정만 댓글 작성 허용하려면:
+    //   1) 아래 함수의 도메인을 학교 도메인으로 바꾸고
+    //   2) comments 의 create 조건에 "&& isSchoolAccount()" 를 추가하세요.
+    // function isSchoolAccount() {
+    //   return request.auth.token.email_verified == true
+    //     && request.auth.token.email.matches('.*@school\\.ac\\.kr$');
+    // }
+
+    match /comments/{commentId} {
+      // 읽기: 누구나 (비로그인 방문자 포함)
+      allow read: if true;
+
+      // 생성: 로그인한 사용자만, 정해진 형식일 때만
+      allow create: if request.auth != null
+        // 허용된 필드만 정확히 포함
+        && request.resource.data.keys().hasOnly(
+             ['targetType', 'targetId', 'text', 'authorUid', 'authorName', 'createdAt'])
+        && request.resource.data.keys().hasAll(
+             ['targetType', 'targetId', 'text', 'authorUid', 'authorName', 'createdAt'])
+        // 작성자 위조 방지
+        && request.resource.data.authorUid == request.auth.uid
+        // 대상
+        && request.resource.data.targetType in ['research', 'course']
+        && request.resource.data.targetId is string
+        && request.resource.data.targetId.size() > 0
+        && request.resource.data.targetId.size() <= 200
+        // 본문: 문자열, 1~1000자, 공백만 있는 댓글 거부
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 1
+        && request.resource.data.text.size() <= 1000
+        && request.resource.data.text.trim().size() > 0
+        // 작성자 이름
+        && request.resource.data.authorName is string
+        && request.resource.data.authorName.size() <= 100
+        // 이름 위조 방지: 구글 계정 이름이 있으면 그 이름과 같아야 함
+        && (!('name' in request.auth.token)
+            || request.resource.data.authorName == request.auth.token.name)
+        // 서버 시간만 허용 (클라이언트 시간 조작 방지)
+        && request.resource.data.createdAt == request.time;
+        // && isSchoolAccount()   // ← 학교 계정만 허용할 때 주석 해제
+
+      // 수정: MVP에서는 금지
+      allow update: if false;
+
+      // 삭제: 작성자 본인 또는 관리자
+      allow delete: if request.auth != null
+        && (resource.data.authorUid == request.auth.uid || isAdmin());
+    }
+
+    // 그 밖의 모든 경로는 전면 차단
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
