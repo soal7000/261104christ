@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useAuth } from '../hooks/useAuth'
+import Avatar from './Avatar'
+import Icon from './Icon'
 import { authErrorMessage, signInWithGoogle } from '../services/auth'
 import {
   MAX_COMMENT_LENGTH,
@@ -29,17 +31,25 @@ const dateFormat = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeS
 export default function Discussion(props: Props) {
   const { enabled } = useAuth()
   return (
-    <section aria-labelledby="discussion-title" className="mt-16 border-t border-stone-200 pt-10 dark:border-stone-800">
-      <h2 id="discussion-title" className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-50">
-        토론
-      </h2>
+    <section id="discussion" aria-labelledby="discussion-title" className="mt-20 scroll-mt-24 border-t-2 border-ink pt-8">
+      <div className="flex items-center gap-2.5">
+        <Icon name="chat" className="h-6 w-6 text-accent-text" />
+        <h2 id="discussion-title" className="section-title">
+          토론
+        </h2>
+      </div>
+      <p className="mt-2 text-sm text-ink-3">이 자료를 읽고 든 생각과 질문을 자유롭게 나눠 주세요. 서로의 의견을 존중해 주세요.</p>
       {enabled ? (
         // key: 다른 자료로 이동하면 상태를 새로 시작
         <DiscussionBody key={`${props.targetType}:${props.targetId}`} {...props} />
       ) : (
-        <p className="mt-4 rounded-lg border border-dashed border-stone-300 bg-white px-4 py-6 text-center text-stone-600 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-400">
-          토론 기능 준비 중입니다. 곧 이 자료에 대해 의견을 나눌 수 있어요.
-        </p>
+        <div className="mt-6 flex flex-col items-center gap-3 rounded-xl border border-dashed border-line bg-surface px-6 py-10 text-center">
+          <span className="grid h-12 w-12 place-items-center rounded-full bg-accent-soft text-accent-text">
+            <Icon name="chat" className="h-6 w-6" />
+          </span>
+          <p className="font-semibold text-ink">토론 기능 준비 중입니다.</p>
+          <p className="text-sm text-ink-3">곧 이 자료에 대해 의견을 나눌 수 있어요.</p>
+        </div>
       )}
     </section>
   )
@@ -144,27 +154,29 @@ function DiscussionBody({ targetType, targetId }: Props) {
       )}
 
       {error && (
-        <p role="alert" className="rounded bg-red-50 px-4 py-3 text-sm text-red-800 dark:bg-red-950 dark:text-red-200">
+        <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
           {error}
         </p>
       )}
 
       <div aria-live="polite" aria-busy={status === 'loading'}>
-        {(status === 'idle' || status === 'loading') && <p className="text-stone-500">댓글을 불러오는 중…</p>}
+        {(status === 'idle' || status === 'loading') && <p className="text-ink-3">댓글을 불러오는 중…</p>}
         {status === 'ready' && comments.length === 0 && (
-          <p className="text-stone-500">아직 댓글이 없습니다. 첫 의견을 남겨 주세요.</p>
+          <p className="py-6 text-center text-ink-3">아직 댓글이 없습니다. 첫 의견을 남겨 주세요.</p>
         )}
         {comments.length > 0 && (
-          <ul className="space-y-4">
+          <ul className="divide-y divide-line">
             {comments.map((c) => {
               const canDelete = !!user && (user.uid === c.authorUid || user.isAdmin)
               return (
-                <li key={c.id} className="rounded-lg border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <li key={c.id} className="flex gap-3.5 py-5">
+                  <Avatar name={c.authorName} />
+                  <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-2">
                     <p className="text-sm">
-                      <span className="font-semibold text-stone-900 dark:text-stone-100">{c.authorName}</span>
+                      <span className="font-semibold text-ink">{c.authorName}</span>
                       {c.createdAt && (
-                        <time dateTime={c.createdAt.toISOString()} className="ml-2 text-stone-500">
+                        <time dateTime={c.createdAt.toISOString()} className="ml-2 text-xs text-ink-3">
                           {dateFormat.format(c.createdAt)}
                         </time>
                       )}
@@ -173,13 +185,14 @@ function DiscussionBody({ targetType, targetId }: Props) {
                       <button
                         type="button"
                         onClick={() => handleDelete(c)}
-                        className="rounded px-2 py-1 text-sm text-stone-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 dark:hover:text-red-300"
+                        className="rounded-md px-2 py-0.5 text-xs text-ink-3 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 dark:hover:text-red-300"
                       >
                         삭제{user && user.uid !== c.authorUid ? ' (관리자)' : ''}
                       </button>
                     )}
                   </div>
-                  <p className="mt-2 whitespace-pre-wrap text-stone-800 dark:text-stone-200">{c.text}</p>
+                  <p className="mt-1.5 whitespace-pre-wrap text-ink-2">{c.text}</p>
+                  </div>
                 </li>
               )
             })}
@@ -191,7 +204,7 @@ function DiscussionBody({ targetType, targetId }: Props) {
               type="button"
               onClick={loadMore}
               disabled={loadingMore}
-              className="rounded border border-stone-300 px-5 py-2 text-sm hover:bg-stone-100 disabled:opacity-50 dark:border-stone-700 dark:hover:bg-stone-800"
+              className="btn-ghost text-sm"
             >
               {loadingMore ? '불러오는 중…' : '더 보기'}
             </button>
@@ -205,7 +218,7 @@ function DiscussionBody({ targetType, targetId }: Props) {
 function LoginPrompt() {
   const [busy, setBusy] = useState(false)
   return (
-    <div className="rounded-lg border border-stone-200 bg-white px-4 py-6 text-center dark:border-stone-800 dark:bg-stone-900">
+    <div className="rounded-xl border border-line bg-surface px-6 py-8 text-center">
       <button
         type="button"
         disabled={busy}
@@ -220,11 +233,12 @@ function LoginPrompt() {
             setBusy(false)
           }
         }}
-        className="rounded bg-accent-700 px-5 py-2.5 font-medium text-white hover:bg-accent-800 disabled:opacity-50"
+        className="btn-primary"
       >
+        <Icon name="login" className="h-4 w-4" />
         구글로 로그인하고 토론에 참여하기
       </button>
-      <p className="mt-3 text-sm text-stone-500">로그인 없이도 댓글은 읽을 수 있습니다.</p>
+      <p className="mt-3 text-sm text-ink-3">로그인 없이도 댓글은 읽을 수 있습니다.</p>
     </div>
   )
 }
@@ -252,9 +266,12 @@ function CommentForm({ onSubmit, authorName }: { onSubmit: (text: string) => Pro
   }
 
   return (
-    <form onSubmit={submit} className="space-y-2">
-      <label htmlFor="comment-text" className="block text-sm text-stone-600 dark:text-stone-400">
-        <span className="font-semibold text-stone-800 dark:text-stone-200">{authorName}</span> 이름으로 댓글을 남깁니다
+    <form onSubmit={submit} className="rounded-xl border border-line bg-surface p-4 focus-within:border-accent sm:p-5">
+      <label htmlFor="comment-text" className="flex items-center gap-2.5 text-sm text-ink-3">
+        <Avatar name={authorName} size="sm" />
+        <span>
+          <span className="font-semibold text-ink">{authorName}</span> 이름으로 댓글을 남깁니다
+        </span>
       </label>
       <textarea
         id="comment-text"
@@ -265,22 +282,22 @@ function CommentForm({ onSubmit, authorName }: { onSubmit: (text: string) => Pro
         placeholder="자료를 읽고 든 생각이나 질문을 남겨 주세요."
         aria-describedby="comment-help"
         aria-invalid={!!error}
-        className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base focus:border-accent-600 dark:border-stone-700 dark:bg-stone-900"
+        className="mt-3 w-full resize-y border-0 bg-transparent p-0 text-base text-ink placeholder:text-ink-3 focus:outline-none"
       />
-      <div className="flex items-center justify-between gap-3">
-        <p id="comment-help" className={`text-sm ${length > MAX_COMMENT_LENGTH ? 'text-red-700 dark:text-red-300' : 'text-stone-500'}`}>
+      <div className="mt-2 flex items-center justify-between gap-3 border-t border-line pt-3">
+        <p id="comment-help" className={`text-xs tabular-nums ${length > MAX_COMMENT_LENGTH ? 'text-red-700 dark:text-red-300' : 'text-ink-3'}`}>
           {length} / {MAX_COMMENT_LENGTH}자
         </p>
         <button
           type="submit"
           disabled={busy || length === 0 || length > MAX_COMMENT_LENGTH}
-          className="rounded bg-accent-700 px-5 py-2 text-sm font-medium text-white hover:bg-accent-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-primary px-4 py-2 text-sm"
         >
           {busy ? '등록 중…' : '댓글 등록'}
         </button>
       </div>
       {error && (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-300">
+        <p role="alert" className="mt-2 text-sm text-red-700 dark:text-red-300">
           {error}
         </p>
       )}

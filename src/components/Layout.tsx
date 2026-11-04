@@ -11,14 +11,12 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <a
-        href="#main"
-        className="sr-only z-50 rounded bg-accent-700 px-4 py-2 text-white focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
-      >
+      <a href="#main" className="btn-primary sr-only z-50 focus:not-sr-only focus:fixed focus:top-3 focus:left-3">
         본문 바로가기
       </a>
       <Header />
-      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
+      {/* key: 페이지마다 진입 애니메이션을 다시 실행 */}
+      <main id="main" tabIndex={-1} key={pathname} className="page-enter flex-1 outline-none">
         <Outlet />
       </main>
       <Footer />

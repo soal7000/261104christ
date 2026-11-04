@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { allTags, researchList } from '../content'
+import { allTags, researchList, type Research } from '../content'
+import Icon from '../components/Icon'
 import PageHeader from '../components/PageHeader'
 import ResearchCard from '../components/ResearchCard'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
@@ -30,53 +31,77 @@ export default function ResearchList() {
     })
   }, [q, tag])
 
+  // 연도별로 묶기 (researchList 가 이미 연도 내림차순)
+  const byYear = useMemo(() => {
+    const groups: { year: number; items: Research[] }[] = []
+    for (const r of results) {
+      const last = groups[groups.length - 1]
+      if (last && last.year === r.year) last.items.push(r)
+      else groups.push({ year: r.year, items: [r] })
+    }
+    return groups
+  }, [results])
+
   return (
-    <div>
+    <>
       <PageHeader eyebrow="Research" title="연구">
         연구 결과와 발표 자료를 모았습니다. 각 연구 페이지에서 토론에 참여할 수 있습니다.
       </PageHeader>
 
-      <div className="mb-8 space-y-4">
-        <div>
-          <label htmlFor="research-search" className="sr-only">
-            연구 검색
-          </label>
-          <input
-            id="research-search"
-            type="search"
-            value={q}
-            onChange={(e) => update('q', e.target.value)}
-            placeholder="제목, 요약, 태그, 연도로 검색"
-            className="w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-base sm:max-w-md dark:border-stone-700 dark:bg-stone-900"
-          />
-        </div>
-        <div role="group" aria-label="태그 필터" className="flex flex-wrap gap-2">
-          <TagButton active={!tag} onClick={() => update('tag', '')}>
-            전체
-          </TagButton>
-          {allTags.map((t) => (
-            <TagButton key={t} active={tag === t} onClick={() => update('tag', tag === t ? '' : t)}>
-              {`#${t}`}
+      <div className="container-page">
+        {/* 검색·필터 */}
+        <div className="sticky top-16 z-30 -mx-4 space-y-4 border-b border-line bg-paper/95 px-4 py-5 backdrop-blur-md sm:mx-0 sm:px-0">
+          <div className="relative sm:max-w-md">
+            <label htmlFor="research-search" className="sr-only">
+              연구 검색
+            </label>
+            <Icon name="search" className="pointer-events-none absolute top-1/2 left-3.5 h-4.5 w-4.5 -translate-y-1/2 text-ink-3" />
+            <input
+              id="research-search"
+              type="search"
+              value={q}
+              onChange={(e) => update('q', e.target.value)}
+              placeholder="제목, 요약, 태그, 연도로 검색"
+              className="w-full rounded-lg border border-line bg-surface py-2.5 pr-4 pl-10 text-base text-ink placeholder:text-ink-3 focus:border-accent"
+            />
+          </div>
+          <div role="group" aria-label="태그 필터" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+            <TagButton active={!tag} onClick={() => update('tag', '')}>
+              전체
             </TagButton>
-          ))}
+            {allTags.map((t) => (
+              <TagButton key={t} active={tag === t} onClick={() => update('tag', tag === t ? '' : t)}>
+                {`#${t}`}
+              </TagButton>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <p className="mb-4 text-sm text-stone-500" aria-live="polite">
-        {results.length}건
-      </p>
-      {results.length ? (
-        <div className="grid gap-4 md:grid-cols-2">
-          {results.map((r) => (
-            <ResearchCard key={r.id} item={r} />
-          ))}
-        </div>
-      ) : (
-        <p className="rounded-lg border border-dashed border-stone-300 px-4 py-10 text-center text-stone-500 dark:border-stone-700">
-          조건에 맞는 연구가 없습니다.
+        <p className="mt-6 text-sm text-ink-3" aria-live="polite">
+          총 <strong className="font-semibold text-ink">{results.length}</strong>건
+          {(q || tag) && (
+            <button type="button" onClick={() => setParams({}, { replace: true })} className="link ml-3">
+              조건 초기화
+            </button>
+          )}
         </p>
-      )}
-    </div>
+
+        {byYear.length ? (
+          byYear.map((g) => (
+            <section key={g.year} aria-label={`${g.year}년`} className="mt-6">
+              <h2 className="border-b-2 border-ink pb-2 font-serif text-2xl font-bold text-ink tabular-nums">{g.year}</h2>
+              <div className="divide-y divide-line">
+                {g.items.map((r) => (
+                  <ResearchCard key={r.id} item={r} showYear={false} />
+                ))}
+              </div>
+            </section>
+          ))
+        ) : (
+          <p className="mt-8 rounded-xl border border-dashed border-line px-4 py-14 text-center text-ink-3">조건에 맞는 연구가 없습니다.</p>
+        )}
+      </div>
+    </>
   )
 }
 
@@ -86,10 +111,8 @@ function TagButton({ active, onClick, children }: { active: boolean; onClick: ()
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-sm transition-colors ${
-        active
-          ? 'border-accent-700 bg-accent-700 text-white dark:border-accent-300 dark:bg-accent-300 dark:text-stone-950'
-          : 'border-stone-300 text-stone-700 hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800'
+      className={`shrink-0 rounded-full border px-3.5 py-1 text-sm transition-colors ${
+        active ? 'border-accent bg-accent text-accent-ink' : 'border-line bg-surface text-ink-2 hover:border-ink-3'
       }`}
     >
       {children}

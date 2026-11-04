@@ -19,11 +19,11 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="rounded p-2 text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
+      className="grid h-9 w-9 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface hover:text-ink"
       aria-label={dark ? '라이트 모드로 전환' : '다크 모드로 전환'}
       title={dark ? '라이트 모드' : '다크 모드'}
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
         {dark ? (
           <>
             <circle cx="12" cy="12" r="4" />

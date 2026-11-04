@@ -298,5 +298,7 @@ Spark 요금제는 카드 등록이 없어 **요금이 청구되지 않습니다
 **설계 메모**
 - Firebase SDK는 동적 import로 불러옵니다. 환경변수가 없으면 SDK 파일 자체를 내려받지 않아 첫 화면이 가볍습니다.
 - 사용하는 Firebase 기능은 `firebase/app`, `firebase/auth`, `firebase/firestore` 뿐입니다(Functions·Storage·Hosting 미사용).
+- **색상 바꾸기:** `src/index.css` 맨 위 `:root`(라이트)와 `.dark`(다크)의 변수만 고치면 사이트 전체 색이 바뀝니다. 포인트 컬러는 `--accent`(버튼 배경)와 `--accent-text`(링크 글자) 두 값입니다. 글자와 배경의 대비는 4.5:1 이상을 유지하세요.
+- 공통 스타일(`btn-primary`, `card`, `eyebrow` 등)은 `src/index.css`의 `@utility`로 정의되어 있습니다.
 - 다크모드는 시스템 설정을 따르고, 헤더의 달/해 버튼으로 바꿀 수 있습니다(브라우저에 저장).
 - 폰트: 본문 Pretendard(jsDelivr CDN), 제목 Noto Serif KR(Google Fonts).

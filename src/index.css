@@ -3,55 +3,115 @@
 /* 다크모드: <html class="dark"> 일 때 dark: 변형 적용 */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* 디자인 토큰: 포인트 컬러 1개(남색 계열) + 중립색 */
-@theme {
+/* ───────────── 디자인 토큰 ─────────────
+   색은 CSS 변수로 정의하고 다크모드에서 값만 바꿉니다.
+   → 컴포넌트에서는 bg-paper, text-ink 처럼 쓰면 라이트/다크가 자동 전환됩니다.
+   포인트 컬러는 남색(accent) 하나, 나머지는 중립색입니다. */
+:root {
+  --paper: #f8f6f1;      /* 바탕 (따뜻한 종이색) */
+  --surface: #ffffff;    /* 카드·패널 */
+  --ink: #1d1c1a;        /* 제목·강조 글자 */
+  --ink-2: #45423c;      /* 본문 글자 */
+  --ink-3: #6f6a62;      /* 보조 글자 (대비 4.5:1 이상) */
+  --line: #e3ded3;       /* 구분선 */
+  --accent: #1f3a5f;     /* 포인트 (버튼 배경 등) */
+  --accent-ink: #ffffff; /* 포인트 위 글자 */
+  --accent-text: #24477a;/* 링크 등 포인트 글자 */
+  --accent-soft: #e8eef6;/* 연한 포인트 배경 */
+}
+.dark {
+  --paper: #121316;
+  --surface: #1a1c20;
+  --ink: #eeebe5;
+  --ink-2: #c9c4ba;
+  --ink-3: #959086;
+  --line: #2d3036;
+  --accent: #9dbde3;
+  --accent-ink: #0f1726;
+  --accent-text: #a9c5e6;
+  --accent-soft: #1c2533;
+}
+
+@theme inline {
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   --font-serif: "Noto Serif KR", Georgia, "Times New Roman", serif;
-  --color-accent-50: #eef4fb;
-  --color-accent-100: #d6e4f4;
-  --color-accent-300: #8fb3dc;
-  --color-accent-600: #2c5a8c;
-  --color-accent-700: #1e3a5f;
-  --color-accent-800: #172d4a;
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
+  --color-accent-soft: var(--accent-soft);
 }
 
 html {
   -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 body {
-  @apply bg-stone-50 text-stone-800 antialiased dark:bg-stone-950 dark:text-stone-200;
+  @apply bg-paper text-ink-2 antialiased;
   font-family: var(--font-sans);
   line-height: 1.7;
   word-break: keep-all; /* 한국어 어절 단위 줄바꿈 */
   overflow-wrap: anywhere;
 }
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
 
 /* 키보드 포커스 표시 (접근성) */
 :focus-visible {
-  outline: 2px solid var(--color-accent-600);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-.dark :focus-visible {
-  outline-color: var(--color-accent-300);
+  outline: 2px solid var(--accent-text);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-/* 마크다운 본문 스타일 (외부 플러그인 없이 최소한으로 정의) */
-.prose-body {
-  @apply text-[1.0625rem] leading-8;
+/* ───────────── 공통 컴포넌트 클래스 ───────────── */
+@utility container-page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8; }
+@utility eyebrow { @apply text-xs font-semibold tracking-[0.14em] text-accent-text uppercase; }
+@utility section-title { @apply font-serif text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]; }
+@utility card { @apply rounded-xl border border-line bg-surface; }
+@utility btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-[0.95rem] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
+@utility btn-primary { @apply btn bg-accent text-accent-ink hover:opacity-90; }
+@utility btn-ghost { @apply btn border border-line bg-surface text-ink hover:border-ink-3; }
+@utility link { @apply text-accent-text underline decoration-accent-text/30 underline-offset-4 hover:decoration-accent-text; }
+
+/* 홈 히어로의 '서판(Tabula)' 가로줄 무늬 — 은은한 배경 장식 */
+.ruled {
+  background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--line) 31px 32px);
+  mask-image: radial-gradient(ellipse 80% 70% at 30% 40%, #000 20%, transparent 75%);
 }
+
+/* 페이지 진입 시 부드럽게 나타나기 (동작 줄이기 설정 존중) */
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.page-enter { animation: rise 0.35s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .page-enter { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ───────────── 마크다운 본문 ───────────── */
+.prose-body { @apply text-[1.0625rem] leading-[1.9] text-ink-2; }
 .prose-body > * + * { @apply mt-5; }
-.prose-body h2 { @apply mt-10 font-serif text-xl font-bold text-stone-900 dark:text-stone-100; }
-.prose-body h3 { @apply mt-8 font-serif text-lg font-bold text-stone-900 dark:text-stone-100; }
-.prose-body a { @apply text-accent-600 underline underline-offset-2 dark:text-accent-300; }
-.prose-body ul { @apply list-disc pl-6; }
-.prose-body ol { @apply list-decimal pl-6; }
-.prose-body li + li { @apply mt-1; }
-.prose-body strong { @apply font-semibold text-stone-900 dark:text-stone-50; }
-.prose-body blockquote { @apply border-l-4 border-accent-300 bg-accent-50 px-4 py-3 text-stone-700 dark:border-accent-600 dark:bg-stone-900 dark:text-stone-300; }
-.prose-body code { @apply rounded bg-stone-200 px-1 py-0.5 text-[0.9em] dark:bg-stone-800; }
-.prose-body table { @apply block w-full overflow-x-auto border-collapse text-sm; }
-.prose-body th, .prose-body td { @apply border border-stone-300 px-3 py-2 text-left dark:border-stone-700; }
-.prose-body th { @apply bg-stone-100 font-semibold dark:bg-stone-900; }
-.prose-body hr { @apply border-stone-300 dark:border-stone-700; }
-.prose-body img { @apply max-w-full rounded; }
+.prose-body > :first-child { margin-top: 0; }
+.prose-body h2 { @apply mt-12 border-b border-line pb-2 font-serif text-[1.375rem] font-bold text-ink; }
+.prose-body h3 { @apply mt-8 font-serif text-lg font-bold text-ink; }
+.prose-body a { @apply link; }
+.prose-body ul { @apply list-disc pl-6 marker:text-ink-3; }
+.prose-body ol { @apply list-decimal pl-6 marker:text-ink-3; }
+.prose-body li + li { @apply mt-1.5; }
+.prose-body strong { @apply font-semibold text-ink; }
+.prose-body blockquote { @apply rounded-r-lg border-l-[3px] border-accent bg-accent-soft px-5 py-4 font-serif text-ink; }
+.prose-body code { @apply rounded bg-accent-soft px-1.5 py-0.5 text-[0.9em]; }
+.prose-body table { @apply block w-full overflow-x-auto border-collapse text-[0.95rem]; }
+.prose-body th, .prose-body td { @apply border-b border-line px-4 py-2.5 text-left; }
+.prose-body th { @apply border-b-2 font-semibold text-ink; }
+.prose-body hr { @apply border-line; }
+.prose-body img { @apply max-w-full rounded-lg; }
